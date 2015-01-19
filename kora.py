@@ -21,7 +21,7 @@ orzeczenie = open('orzeczenie.txt', 'r')
 dopelnienie = open('dopelnienie.txt', 'r')
 przydawka = open('przydawka.txt', 'r')
 def cytat(): #fetching quote from db
-    connection = pymysql.connect(dbhost, dbport, dbuser, dbpasswd, db)
+    connection = pymysql.connect(**connection_settings)
     kursor = connection.cursor()
     kursor.execute('SELECT * FROM Quote ORDER BY RAND() LIMIT 1')
     for row in kursor.fetchall():
@@ -29,12 +29,13 @@ def cytat(): #fetching quote from db
     kursor.close()
     connection.close()
 def dodaj(): #adding quote to db
-    connection = pymysql.connect(dbhost, dbport, dbuser, dbpasswd, db)
+    connection = pymysql.connect(**connection_settings)
     kursor = connection.cursor()
-    qwithline = 'INSERT INTO Quote (Quote) VALUES ("%s")' % getquote.encode('utf-8')
+    qwithline = 'INSERT INTO Quote (Quote) VALUES ("%s")' % getquote
     kursor.execute(qwithline)
     kursor.close()
     connection.close()
+    print (qwithline)
 def zguwnij():
     linep = random.choice(open('podmiot.txt').readlines())
     lineok = random.choice(open('okolicznik.txt').readlines())
@@ -78,7 +79,7 @@ for line in soclog:
     if '!cyt' in line:
         cytat()
     if '!test' in line:
-        getquote = line[45:]
+        getquote = line[62:]
         dodaj()
         print (getquote)
 
