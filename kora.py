@@ -3,6 +3,7 @@ import socket
 import random
 import pymysql
 from settings import *
+import re
 #settings located in settings file
 
 if debug == True:
@@ -11,7 +12,6 @@ if debug == True:
 else:
     channel = '#kx'
     host = "irc.quakenet.org"
-
 
 #guwner
 random.seed()
@@ -31,7 +31,7 @@ def cytat(): #fetching quote from db
 def dodaj(): #adding quote to db
     connection = pymysql.connect(**connection_settings)
     kursor = connection.cursor()
-    qwithline = 'INSERT INTO Quote (Quote) VALUES ("%s")' % getquote
+    qwithline = 'INSERT INTO Quote (Quote) VALUES ("%s")' % quotemsg
     kursor.execute(qwithline)
     kursor.close()
     connection.close()
@@ -67,6 +67,9 @@ FirstPing = False
 for line in soclog:
     line = line.strip()
     print(line)
+    if 'PRIVMSG' in line:
+        msg = ":".join(line.split (':')[2:])
+        nick = line.split('!')[ 0 ].replace(':','')
     if 'PING' in line:
         print("PONG :" + line.split(":")[1], file=soclog)
         if not FirstPing:
@@ -79,8 +82,9 @@ for line in soclog:
     if '!cyt' in line:
         cytat()
     if '!test' in line:
-        getquote = line[62:]
+        quotemsg = msg.replace("!test ","",1)
         dodaj()
-        print (getquote)
+
+
 
 
